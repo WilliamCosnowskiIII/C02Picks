@@ -40,9 +40,11 @@ describe("getUserLeagues", () => {
 
     expect(fetchMock).toHaveBeenCalledWith(
       "https://api.sleeper.app/v1/user/testuser",
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
     expect(fetchMock).toHaveBeenCalledWith(
       "https://api.sleeper.app/v1/user/user123/leagues/nfl/2025",
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
     expect(leagues).toEqual([
       {

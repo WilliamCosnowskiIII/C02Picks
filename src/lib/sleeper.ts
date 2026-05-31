@@ -22,8 +22,12 @@ type SleeperRoster = {
   };
 };
 
+const FETCH_TIMEOUT_MS = 10_000;
+
 async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
   if (!response.ok) {
     throw new Error(`Request failed: ${url} (${response.status})`);
   }
@@ -34,7 +38,9 @@ export async function getUserLeagues(
   username: string,
   season: number,
 ): Promise<League[]> {
-  const userResponse = await fetch(`${SLEEPER_BASE}/user/${username}`);
+  const userResponse = await fetch(`${SLEEPER_BASE}/user/${username}`, {
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+  });
   if (!userResponse.ok) {
     throw new Error(`Sleeper user not found: ${username}`);
   }

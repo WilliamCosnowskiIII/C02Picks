@@ -77,8 +77,8 @@ flowchart TD
   rootLayout --> home["app/page.tsx\n(Server Component)"]
   rootLayout --> settings["app/settings/page.tsx\n(Server Component)"]
 
-  home --> fetchAll["fetchAllLeagues()"]
   home --> dashboard["LeagueDashboard\n(Client Component)"]
+  dashboard -->|"GET /api/leagues"| apiLeagues
 
   dashboard --> card["LeagueCard"]
   card --> badge["PlatformBadge"]
@@ -205,5 +205,6 @@ src/
 
 | Date | Change |
 |------|--------|
+| 2026-05-30 | Fix homepage hang: client-side league fetch, Sleeper API timeouts |
 | 2026-05-30 | Env fix: Sleeper null-safe league fetch, dashboard empty-state messaging, `.env.local` guidance |
 | 2026-05-30 | Initial v1: league dashboard, Sleeper + ESPN clients, PWA shell |

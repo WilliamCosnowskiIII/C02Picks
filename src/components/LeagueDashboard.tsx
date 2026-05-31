@@ -1,35 +1,61 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { LeagueCard } from "@/components/LeagueCard";
 import { getEmptyLeaguesMessage } from "@/lib/dashboard-messages";
 import type { LeaguesResult } from "@/lib/leagues";
 
-type LeagueDashboardProps = {
-  initialData: LeaguesResult;
-};
+async function loadLeagues(): Promise<LeaguesResult> {
+  const response = await fetch("/api/leagues");
+  if (!response.ok) {
+    throw new Error("Failed to load leagues");
+  }
+  return response.json() as Promise<LeaguesResult>;
+}
 
-export function LeagueDashboard({ initialData }: LeagueDashboardProps) {
-  const [data, setData] = useState(initialData);
+export function LeagueDashboard() {
+  const [data, setData] = useState<LeaguesResult | null>(null);
+  const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isConfigured =
-    data.config.sleeperConfigured || data.config.espnConfigured;
-  const emptyMessage = getEmptyLeaguesMessage(data);
+  useEffect(() => {
+    let active = true;
+
+    void (async () => {
+      try {
+        const payload = await loadLeagues();
+        if (active) {
+          setData(payload);
+          setError(null);
+        }
+      } catch (fetchError) {
+        if (active) {
+          setError(
+            fetchError instanceof Error
+              ? fetchError.message
+              : "Something went wrong",
+          );
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    })();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   async function handleRefresh() {
     setRefreshing(true);
     setError(null);
 
     try {
-      const response = await fetch("/api/leagues");
-      if (!response.ok) {
-        throw new Error("Failed to load leagues");
-      }
-
-      const payload = (await response.json()) as LeaguesResult;
+      const payload = await loadLeagues();
       setData(payload);
     } catch (fetchError) {
       setError(
@@ -41,6 +67,10 @@ export function LeagueDashboard({ initialData }: LeagueDashboardProps) {
       setRefreshing(false);
     }
   }
+
+  const isConfigured =
+    data?.config.sleeperConfigured || data?.config.espnConfigured;
+  const emptyMessage = data ? getEmptyLeaguesMessage(data) : null;
 
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 flex-col gap-6 px-4 py-8 sm:px-6">
@@ -65,7 +95,7 @@ export function LeagueDashboard({ initialData }: LeagueDashboardProps) {
           <button
             type="button"
             onClick={() => void handleRefresh()}
-            disabled={refreshing}
+            disabled={loading || refreshing}
             className="rounded-full bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-white"
           >
             {refreshing ? "Refreshing..." : "Refresh"}
@@ -73,13 +103,19 @@ export function LeagueDashboard({ initialData }: LeagueDashboardProps) {
         </div>
       </header>
 
-      {error && (
+      {loading && (
+        <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center text-zinc-500 dark:border-zinc-700">
+          Loading leagues...
+        </div>
+      )}
+
+      {!loading && error && (
         <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">
           {error}
         </div>
       )}
 
-      {!isConfigured && (
+      {!loading && !error && data && !isConfigured && (
         <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
           <h2 className="text-lg font-semibold">No leagues configured yet</h2>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
@@ -95,7 +131,7 @@ export function LeagueDashboard({ initialData }: LeagueDashboardProps) {
         </div>
       )}
 
-      {emptyMessage && (
+      {!loading && !error && emptyMessage && (
         <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/20">
           <h2 className="text-lg font-semibold text-amber-900 dark:text-amber-200">
             No leagues found
@@ -104,16 +140,22 @@ export function LeagueDashboard({ initialData }: LeagueDashboardProps) {
         </div>
       )}
 
-      {isConfigured && !emptyMessage && data.leagues.length === 0 && data.errors.length > 0 && (
-        <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
-          <h2 className="text-lg font-semibold">Could not load leagues</h2>
-          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            Check the errors below and try refreshing.
-          </p>
-        </div>
-      )}
+      {!loading &&
+        !error &&
+        data &&
+        isConfigured &&
+        !emptyMessage &&
+        data.leagues.length === 0 &&
+        data.errors.length > 0 && (
+          <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
+            <h2 className="text-lg font-semibold">Could not load leagues</h2>
+            <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+              Check the errors below and try refreshing.
+            </p>
+          </div>
+        )}
 
-      {data.leagues.length > 0 && (
+      {!loading && data && data.leagues.length > 0 && (
         <section className="grid gap-4 sm:grid-cols-2">
           {data.leagues.map((league) => (
             <LeagueCard key={`${league.platform}-${league.id}`} league={league} />
@@ -121,7 +163,7 @@ export function LeagueDashboard({ initialData }: LeagueDashboardProps) {
         </section>
       )}
 
-      {data.errors.length > 0 ? (
+      {!loading && data && data.errors.length > 0 ? (
         <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/30">
           <h2 className="font-semibold text-amber-900 dark:text-amber-200">
             Some leagues could not be loaded
