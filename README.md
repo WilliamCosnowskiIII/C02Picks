@@ -43,6 +43,23 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
+## Troubleshooting
+
+**Page stuck loading or Settings never opens**
+
+1. Stop all dev servers (`Ctrl+C` in every terminal running `npm run dev`).
+2. Kill anything still on port 3000: `lsof -ti :3000 | xargs kill`
+3. Start fresh: `npm run dev`
+4. Use **http://localhost:3000** (not 3001) unless the terminal says otherwise.
+
+The dev script uses webpack instead of Turbopack for more reliable local development.
+
+**"Loading leagues..." forever**
+
+- Confirm `.env.local` exists (not just `.env.local.example`) and has `SLEEPER_USERNAME`.
+- Restart `npm run dev` after editing `.env.local`.
+- Click **Refresh** — league data is cached for 60 seconds on the server.
+
 ## iPhone install (PWA)
 
 1. Run the app on your Mac (`npm run dev`) or deploy it.

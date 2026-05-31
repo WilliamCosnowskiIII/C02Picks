@@ -205,6 +205,6 @@ src/
 
 | Date | Change |
 |------|--------|
-| 2026-05-30 | Fix homepage hang: client-side league fetch, Sleeper API timeouts |
+| 2026-05-30 | Dev stability: webpack dev server, API cache, route loading states, fetch timeouts |
 | 2026-05-30 | Env fix: Sleeper null-safe league fetch, dashboard empty-state messaging, `.env.local` guidance |
 | 2026-05-30 | Initial v1: league dashboard, Sleeper + ESPN clients, PWA shell |

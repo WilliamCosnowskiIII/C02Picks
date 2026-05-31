@@ -7,11 +7,25 @@ import { getEmptyLeaguesMessage } from "@/lib/dashboard-messages";
 import type { LeaguesResult } from "@/lib/leagues";
 
 async function loadLeagues(): Promise<LeaguesResult> {
-  const response = await fetch("/api/leagues");
-  if (!response.ok) {
-    throw new Error("Failed to load leagues");
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 15_000);
+
+  try {
+    const response = await fetch("/api/leagues", {
+      signal: controller.signal,
+    });
+    if (!response.ok) {
+      throw new Error("Failed to load leagues");
+    }
+    return response.json() as Promise<LeaguesResult>;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new Error("Request timed out. Try Refresh or restart npm run dev.");
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeoutId);
   }
-  return response.json() as Promise<LeaguesResult>;
 }
 
 export function LeagueDashboard() {
