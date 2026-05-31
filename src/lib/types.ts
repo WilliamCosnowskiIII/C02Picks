@@ -19,3 +19,23 @@ export type EspnCookies = {
   espnS2: string;
   swid: string;
 };
+
+export type RosterPlayer = {
+  id: string;
+  name: string;
+  position: string;
+  nflTeam?: string;
+  slot: string;
+  isStarter: boolean;
+};
+
+export type MyTeam = {
+  leagueId: string;
+  platform: Platform;
+  leagueName: string;
+  teamName: string;
+  season: number;
+  record?: LeagueRecord;
+  starters: RosterPlayer[];
+  bench: RosterPlayer[];
+};
