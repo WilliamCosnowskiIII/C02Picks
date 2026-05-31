@@ -140,6 +140,7 @@ sequenceDiagram
 | `lib/sleeper.ts` | `types` | `lib/leagues`, `api/sleeper/leagues` |
 | `lib/espn.ts` | `types` | `lib/leagues`, `api/espn/league` |
 | `lib/leagues.ts` | `config`, `sleeper`, `espn`, `types` | `app/page`, `api/leagues` |
+| `lib/dashboard-messages.ts` | `leagues` types | `LeagueDashboard` |
 | `components/PlatformBadge.tsx` | `types` | `LeagueCard` |
 | `components/LeagueCard.tsx` | `PlatformBadge`, `types` | `LeagueDashboard` |
 | `components/LeagueDashboard.tsx` | `LeagueCard`, `leagues` types | `app/page` |
@@ -194,7 +195,8 @@ src/
     ├── types.ts
     ├── sleeper.ts
     ├── espn.ts
-    └── leagues.ts
+    ├── leagues.ts
+    └── dashboard-messages.ts
 ```
 
 ---
@@ -203,4 +205,5 @@ src/
 
 | Date | Change |
 |------|--------|
+| 2026-05-30 | Env fix: Sleeper null-safe league fetch, dashboard empty-state messaging, `.env.local` guidance |
 | 2026-05-30 | Initial v1: league dashboard, Sleeper + ESPN clients, PWA shell |

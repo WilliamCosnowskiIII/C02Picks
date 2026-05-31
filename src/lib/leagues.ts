@@ -16,6 +16,7 @@ export type LeaguesResult = {
     sleeperConfigured: boolean;
     espnConfigured: boolean;
     season: number;
+    sleeperUsername?: string;
   };
 };
 
@@ -71,6 +72,7 @@ export async function fetchAllLeagues(): Promise<LeaguesResult> {
       sleeperConfigured: Boolean(config.sleeperUsername),
       espnConfigured: config.espnLeagueIds.length > 0,
       season: config.season,
+      sleeperUsername: config.sleeperUsername,
     },
   };
 }

@@ -40,9 +40,10 @@ export async function getUserLeagues(
   }
 
   const user = (await userResponse.json()) as SleeperUser;
-  const leagues = await fetchJson<SleeperLeague[]>(
+  const leaguesResponse = await fetchJson<SleeperLeague[] | null>(
     `${SLEEPER_BASE}/user/${user.user_id}/leagues/nfl/${season}`,
   );
+  const leagues = Array.isArray(leaguesResponse) ? leaguesResponse : [];
 
   return Promise.all(
     leagues.map(async (league) => {

@@ -21,6 +21,22 @@ export default function SettingsPage() {
         </p>
       </header>
 
+      {!status.sleeperConfigured && !status.espnConfigured && (
+        <section className="rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/50 dark:bg-amber-950/30">
+          <h2 className="font-semibold text-amber-900 dark:text-amber-200">
+            Configuration not loaded
+          </h2>
+          <p className="mt-2 text-sm text-amber-800 dark:text-amber-300">
+            Put your values in{" "}
+            <code className="rounded bg-amber-100 px-1 dark:bg-amber-900/50">.env.local</code>
+            , not{" "}
+            <code className="rounded bg-amber-100 px-1 dark:bg-amber-900/50">.env.local.example</code>
+            . Copy the example file, rename it, fill in your details, then restart{" "}
+            <code className="rounded bg-amber-100 px-1 dark:bg-amber-900/50">npm run dev</code>.
+          </p>
+        </section>
+      )}
+
       <section className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
         <h2 className="text-lg font-semibold">Current status</h2>
         <dl className="mt-4 grid gap-3 text-sm">
@@ -50,7 +66,11 @@ export default function SettingsPage() {
       <section className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
         <h2 className="text-lg font-semibold">Setup</h2>
         <ol className="mt-4 list-decimal space-y-3 pl-5 text-sm text-zinc-700 dark:text-zinc-300">
-          <li>Copy `.env.local.example` to `.env.local` in the project root.</li>
+          <li>
+            Copy <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">.env.local.example</code>{" "}
+            to <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">.env.local</code> in the
+            project root.
+          </li>
           <li>
             Set `SLEEPER_USERNAME` to your Sleeper handle to auto-load all NFL
             leagues for the season.

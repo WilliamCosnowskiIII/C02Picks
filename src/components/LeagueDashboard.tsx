@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { LeagueCard } from "@/components/LeagueCard";
+import { getEmptyLeaguesMessage } from "@/lib/dashboard-messages";
 import type { LeaguesResult } from "@/lib/leagues";
 
 type LeagueDashboardProps = {
@@ -16,6 +17,7 @@ export function LeagueDashboard({ initialData }: LeagueDashboardProps) {
 
   const isConfigured =
     data.config.sleeperConfigured || data.config.espnConfigured;
+  const emptyMessage = getEmptyLeaguesMessage(data);
 
   async function handleRefresh() {
     setRefreshing(true);
@@ -81,20 +83,32 @@ export function LeagueDashboard({ initialData }: LeagueDashboardProps) {
         <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
           <h2 className="text-lg font-semibold">No leagues configured yet</h2>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            Add your Sleeper username and ESPN league IDs in{" "}
+            Create a <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">.env.local</code>{" "}
+            file in the project root (not{" "}
+            <code className="rounded bg-zinc-100 px-1 dark:bg-zinc-800">.env.local.example</code>
+            ), add your Sleeper username, then restart the dev server. See{" "}
             <Link href="/settings" className="font-medium underline">
               Settings
-            </Link>
-            , then create a `.env.local` file using the example template.
+            </Link>{" "}
+            for details.
           </p>
         </div>
       )}
 
-      {isConfigured && data.leagues.length === 0 && (
+      {emptyMessage && (
+        <div className="rounded-2xl border border-dashed border-amber-300 bg-amber-50 p-8 text-center dark:border-amber-900/50 dark:bg-amber-950/20">
+          <h2 className="text-lg font-semibold text-amber-900 dark:text-amber-200">
+            No leagues found
+          </h2>
+          <p className="mt-2 text-amber-800 dark:text-amber-300">{emptyMessage}</p>
+        </div>
+      )}
+
+      {isConfigured && !emptyMessage && data.leagues.length === 0 && data.errors.length > 0 && (
         <div className="rounded-2xl border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-700">
-          <h2 className="text-lg font-semibold">No leagues found</h2>
+          <h2 className="text-lg font-semibold">Could not load leagues</h2>
           <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-            Check your configuration and try refreshing.
+            Check the errors below and try refreshing.
           </p>
         </div>
       )}

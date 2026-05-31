@@ -66,4 +66,40 @@ describe("getUserLeagues", () => {
       "Sleeper user not found: missing",
     );
   });
+
+  it("returns an empty array when Sleeper returns null for leagues", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ user_id: "user123", display_name: "testuser" }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => null,
+      });
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const leagues = await getUserLeagues("testuser", 2025);
+
+    expect(leagues).toEqual([]);
+  });
+
+  it("returns an empty array when Sleeper returns no leagues", async () => {
+    const fetchMock = vi.fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ user_id: "user123", display_name: "testuser" }),
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      });
+
+    vi.stubGlobal("fetch", fetchMock);
+
+    const leagues = await getUserLeagues("testuser", 2025);
+
+    expect(leagues).toEqual([]);
+  });
 });
