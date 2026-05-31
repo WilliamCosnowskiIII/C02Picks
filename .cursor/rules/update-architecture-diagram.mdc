@@ -1,0 +1,31 @@
+---
+description: Keep docs/ARCHITECTURE.md in sync when changing app structure or data flow
+globs: src/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Update Architecture Diagram
+
+When you add, remove, rename, or rewire modules under `src/`, update [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) in the same change.
+
+## Required updates
+
+1. **Mermaid diagrams** — adjust nodes/edges if imports or call paths change
+2. **Module dependency map** — add/remove rows when modules are created or deleted
+3. **API routes table** — update when routes are added or changed
+4. **File tree** — keep in sync with `src/` layout
+5. **Changelog** — append a dated row summarizing the structural change
+
+## Triggers
+
+Update the doc when changing:
+- `src/app/**` pages or API routes
+- `src/components/**`
+- `src/lib/**` or `src/config/**`
+- External API integration points
+
+## Skip updates for
+
+- Pure styling or copy changes
+- Test-only changes that don't alter module boundaries
+- Env var renames with no code structure change

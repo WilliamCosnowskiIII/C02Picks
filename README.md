@@ -1,36 +1,85 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# C02Picks
 
-## Getting Started
+A React web app for tracking your Sleeper and ESPN fantasy football leagues in one dashboard. Install it as a PWA on iPhone or use it in any desktop browser on Mac.
 
-First, run the development server:
+## Architecture
+
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for component diagrams, data flow, and module dependencies. Update that doc when changing app structure.
+
+## Features (v1)
+
+- Unified dashboard for Sleeper and ESPN leagues
+- League name, platform, season, team count, and your record
+- Server-side API proxies for Sleeper and ESPN
+- PWA support for iPhone home screen install
+
+## Quick start
+
+1. Install dependencies:
+
+```bash
+npm install
+```
+
+2. Copy the environment template:
+
+```bash
+cp .env.local.example .env.local
+```
+
+3. Fill in `.env.local`:
+
+- `SLEEPER_USERNAME` — your Sleeper handle
+- `ESPN_LEAGUE_IDS` — comma-separated ESPN league IDs
+- `ESPN_S2` and `ESPN_SWID` — only for private ESPN leagues
+- `ESPN_MEMBER_ID` — optional, helps show your ESPN record on private leagues
+- `NFL_SEASON` — e.g. `2025`
+
+4. Run the dev server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## iPhone install (PWA)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Run the app on your Mac (`npm run dev`) or deploy it.
+2. On iPhone Safari, open the app URL (use your Mac's local IP during dev).
+3. Tap Share → **Add to Home Screen**.
 
-## Learn More
+## ESPN cookies (private leagues only)
 
-To learn more about Next.js, take a look at the following resources:
+1. Log into [ESPN Fantasy Football](https://fantasy.espn.com/football/) in Chrome.
+2. Open DevTools → Application → Cookies.
+3. Copy `espn_s2` and `SWID` into `.env.local`.
+4. Restart the dev server.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Cookies stay server-side in `.env.local` and are never sent to the browser.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Scripts
 
-## Deploy on Vercel
+- `npm run dev` — start development server
+- `npm run build` — production build
+- `npm run start` — run production server
+- `npm test` — run test suite
+- `npm run lint` — run ESLint
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## API routes
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `GET /api/leagues` — all configured leagues
+- `GET /api/sleeper/leagues?username=...&season=2025`
+- `GET /api/espn/league?leagueId=...&season=2025`
+
+## Security notes
+
+- ESPN cookies act as your logged-in session. Never commit `.env.local`.
+- The MVP is read-only — no trades or roster changes are made.
+- Keep the repo private if you deploy with ESPN cookies on a cloud host.
+
+## Roadmap (v2)
+
+- Trade analyzer and waiver wire scout
+- Roster analytics and cross-league player view
+- Weekly matchups and live scores
